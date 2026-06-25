@@ -1,7 +1,12 @@
 #include<iostream>
+#include "shell.hpp"
+
 
 int main()
 {
-  std::cout<<"sash\n";
+  Shell shell;
+  shell.run();
+
   return 0;
+
 }
