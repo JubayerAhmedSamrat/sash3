@@ -1,24 +1,22 @@
-why? `If I dissapear for 6 months, can i understand my project again`
+**Architecture is the shape of the system.**
 
+# INDEX
 
-# Architecture of sash3
+    1. Purpose
+    2. Design Principles
+    3. Directory Structure
+    4. Modules and Responsibility
+    5. Execution Flow
+    6. Future Architecture
+
+## 1. Purpose
+    
+## 2. Design Principles of sash3
 
     1. Layered Architecture
     2. Modular Monolith
     3. Separation of Concern(SoC)
 
-## INDEX
 
-    1. Overview
-    2. Goals
-    3. Design Principles
-    4. Layered Architecture
-    5. Modular Monolith
-    6. Separation of Concerns
-    7. Module Responsibilities
-    8. Execution Flow
-    9. Directory Structure
-    10. Future Architecture
-
-## 1. Overview
+## 3. Overview
 
