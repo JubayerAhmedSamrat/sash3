@@ -20,5 +20,5 @@ why? `If I dissapear for 6 months, can i understand my project again`
     9. Directory Structure
     10. Future Architecture
 
-## 1. Layered Architecture
+## 1. Overview
 
