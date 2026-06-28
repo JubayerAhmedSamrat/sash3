@@ -1,4 +1,5 @@
 #include "executor.hpp"
+ 
 #include <cstdlib>
 #include <cstdio>
 #include <sys/types.h>
@@ -9,6 +10,10 @@ void Executor::execute(
     const std::vector<std::string>& tokens)
 {
   if(tokens.empty())
+  {
+    return;
+  }
+  if(builtin_.execute(tokens))
   {
     return;
   }
