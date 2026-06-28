@@ -1,6 +1,7 @@
 #pragma once
 
 #include "executor.hpp"
+#include "lexer.hpp"
 class Shell
 {
   public:
@@ -8,6 +9,7 @@ class Shell
 
   private:
     void loop();
-
+  
+    Lexer lexer_;
     Executor executor_;
 };
