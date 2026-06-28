@@ -20,15 +20,6 @@ void Shell::loop()
     }
     auto tokens = lexer_.tokenize(line);
     
-    for(std::size_t i = 0; i < tokens.size(); ++i)
-    {
-      std::cout 
-        <<"Token "
-        << i 
-        << ": "
-        << tokens[i]
-        <<'\n';
-    }
-    //executor_.execute(line);
+    executor_.execute(tokens);
   }
 }
