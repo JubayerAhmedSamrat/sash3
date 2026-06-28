@@ -1,5 +1,6 @@
 #pragma once
 
+#include "executor.hpp"
 class Shell
 {
   public:
@@ -7,4 +8,6 @@ class Shell
 
   private:
     void loop();
+
+    Executor executor_;
 };

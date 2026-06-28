@@ -1,4 +1,5 @@
 **My Engineering Journal**
+What random thoughts do i want to keep.
 # INDEX
 
     1. Ideas

@@ -1,5 +1,5 @@
 #include "shell.hpp"
-#include<iostream>
+#include <iostream>
 #include <string>
 
 void Shell::run()
@@ -9,10 +9,15 @@ void Shell::run()
 
 void Shell::loop()
 {
-  std::string line;
-
-  std::cout << "sash3\n";
-  std::getline(std::cin, line);
-
-  std::cout<< "You typed: " << line << '\n';
+  while(true)
+  {
+    std::string line;
+    std::cout << "sash3 ";
+    
+    if(!std::getline(std::cin, line))
+    {
+      break;
+    }
+    executor_.execute(line);
+  }
 }
