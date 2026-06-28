@@ -11,7 +11,7 @@ void Shell::run()
 
 void Shell::loop()
 {
-  while(true)
+  while (true)
   {
     std::string line;
     print_prompt();
@@ -22,7 +22,7 @@ void Shell::loop()
     }
     auto tokens = lexer_.tokenize(line);
     
-    executor_.execute(tokens);
+   last_status_ = executor_.execute(tokens);
   }
 }
 
@@ -30,9 +30,27 @@ void Shell::loop()
 void Shell::print_prompt()
 {
   char cwd[PATH_MAX];
-  if(getcwd(cwd, sizeof(cwd)) != nullptr)
+  if (getcwd(cwd, sizeof(cwd)) != nullptr)
   {
-    std::cout<< "[~/sash: "<< cwd <<"] ";
+    std::string path(cwd);
+    auto pos = path.find_last_of('/');
+    std::string current_dir;
+    if (pos == std::string::npos)
+    {
+      current_dir = path;
+    } else {
+      current_dir = path.substr(pos + 1);
+    }
+
+    if (current_dir.empty())
+    {
+      current_dir = "/";
+    }
+    std::cout
+      << "[~/sash: "
+      << current_dir
+      << (last_status_ == 0 ? " ✓" : " ✗")
+      <<"]$ ";
   } else {
     std::cout<<"sash> ";
   }

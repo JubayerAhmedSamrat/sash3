@@ -6,7 +6,7 @@
 class Executor
 {
 public:
-  void execute(const std::vector<std::string>& tokens);
+  int execute(const std::vector<std::string>& tokens);
 
 private:
   BuiltinManager builtin_;

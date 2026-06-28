@@ -10,6 +10,8 @@ class Shell
   private:
     void loop();
     void print_prompt();
+
+    int last_status_ = 0;
   
     Lexer lexer_;
     Executor executor_;

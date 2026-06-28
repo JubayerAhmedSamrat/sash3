@@ -6,16 +6,16 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-void Executor::execute(
+int Executor::execute(
     const std::vector<std::string>& tokens)
 {
   if(tokens.empty())
   {
-    return;
+    return 0;
   }
   if(builtin_.execute(tokens))
   {
-    return;
+    return 0;
   }
   if(tokens[0] == "exit")
   {
@@ -27,7 +27,7 @@ void Executor::execute(
   if(pid < 0)
   {
     perror("fork");
-    return;
+    return 1;
   }
   if(pid == 0)
   {
@@ -51,6 +51,13 @@ void Executor::execute(
   //parent process--------
     int status;
     waitpid(pid, &status, 0);
+
+    if(WIFEXITED(status))
+    {
+      return WEXITSTATUS(status);
+    }
+    
+    return 1;
   }
 
 }
