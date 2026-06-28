@@ -9,6 +9,7 @@ class Shell
 
   private:
     void loop();
+    void print_prompt();
   
     Lexer lexer_;
     Executor executor_;

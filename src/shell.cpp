@@ -1,6 +1,8 @@
 #include "shell.hpp"
 #include <iostream>
 #include <string>
+#include <unistd.h>
+#include <limits.h>
 
 void Shell::run()
 {
@@ -12,7 +14,7 @@ void Shell::loop()
   while(true)
   {
     std::string line;
-    std::cout << "sash3 ";
+    print_prompt();
     
     if(!std::getline(std::cin, line))
     {
@@ -21,5 +23,17 @@ void Shell::loop()
     auto tokens = lexer_.tokenize(line);
     
     executor_.execute(tokens);
+  }
+}
+
+
+void Shell::print_prompt()
+{
+  char cwd[PATH_MAX];
+  if(getcwd(cwd, sizeof(cwd)) != nullptr)
+  {
+    std::cout<< "[~/sash: "<< cwd <<"] ";
+  } else {
+    std::cout<<"sash> ";
   }
 }
