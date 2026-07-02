@@ -11,6 +11,11 @@ public:
 
 private:
   int executeSingle(const Command& command);
+  void setupRedirection(const Command& command);
+
+
+  [[noreturn]]
+  void execCommand(const Command& command);
 
   BuiltinManager builtin_;
 };
