@@ -1,5 +1,6 @@
 #pragma once
 
+#include "parser.hpp"
 #include "executor.hpp"
 #include "lexer.hpp"
 class Shell
@@ -14,5 +15,6 @@ class Shell
     int last_status_ = 0;
   
     Lexer lexer_;
+    Parser parser_;
     Executor executor_;
 };

@@ -5,10 +5,13 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <fcntl.h>
 
 int Executor::execute(
-    const std::vector<std::string>& tokens)
+    const Command& command)
 {
+
+  const auto& tokens = command.argv;
   if(tokens.empty())
   {
     return 0;
@@ -31,7 +34,37 @@ int Executor::execute(
   }
   if(pid == 0)
   {
-  //child porcess---------
+  //child porcess-----------------------------
+  
+  // redirect stdout if needed-----
+    if(!command.output_file.empty())
+    {
+      int flags = O_WRONLY | O_CREAT;
+      if(command.append)
+      {
+        flags |= O_APPEND;
+      } else {
+        flags |= O_TRUNC;
+      }
+      int fd = open(
+          command.output_file.c_str(),
+          flags, 0644
+          );
+      if(fd < 0)
+      {
+        perror("open");
+        std::exit(EXIT_FAILURE);
+      }
+
+      if(dup2(fd, STDOUT_FILENO) < 0)
+      {
+        perror("dup2");
+        close(fd);
+        std::exit(EXIT_FAILURE);
+      }
+      close(fd);
+    }
+    // build argv--------------
     std::vector<char*> argv;
 
     for(const auto& token : tokens)
@@ -48,7 +81,7 @@ int Executor::execute(
     std::exit(EXIT_FAILURE);
 
   } else {
-  //parent process--------
+  //parent process-------------------------------
     int status;
     waitpid(pid, &status, 0);
 

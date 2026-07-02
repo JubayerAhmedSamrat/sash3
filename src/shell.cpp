@@ -1,4 +1,5 @@
 #include "shell.hpp"
+
 #include <iostream>
 #include <string>
 #include <unistd.h>
@@ -21,8 +22,9 @@ void Shell::loop()
       break;
     }
     auto tokens = lexer_.tokenize(line);
+    Command command = parser_.parse(tokens);
     
-   last_status_ = executor_.execute(tokens);
+   last_status_ = executor_.execute(command);
   }
 }
 
