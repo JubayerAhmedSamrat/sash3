@@ -5,6 +5,14 @@
 #include <unistd.h>
 #include <limits.h>
 
+constexpr const char* RESET = "\033[0m";
+constexpr const char* CYAN = "\033[36m";
+constexpr const char* BLUE = "\033[34m";
+constexpr const char* GREEN = "\033[32m";
+constexpr const char* RED = "\033[31m";
+constexpr const char* GRAY = "\033[90m";
+constexpr const char* BOLD = "\033[1m";
+
 void Shell::run()
 {
   loop();
@@ -49,10 +57,20 @@ void Shell::print_prompt()
       current_dir = "/";
     }
     std::cout
-      << "[~/sash: "
+      <<BOLD
+      << CYAN
+      << "sash"
+      << RESET
+      << '\n'
+      << GRAY
+      << "└─ "
+      << RESET
       << current_dir
+      << ' '
+      << (last_status_ == 0 ? GREEN : RED)
       << (last_status_ == 0 ? " ✓" : " ✗")
-      <<"]$ ";
+      << RESET
+      << " $ ";
   } else {
     std::cout<<"sash> ";
   }
