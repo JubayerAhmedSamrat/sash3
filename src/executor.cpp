@@ -35,7 +35,22 @@ int Executor::execute(
   if(pid == 0)
   {
   //child porcess-----------------------------
-  
+    if(!command.input_file.empty())
+    {
+      int fd = open(command.input_file.c_str(), O_RDONLY);
+      if(fd < 0)
+      {
+        perror("open");
+        std::exit(EXIT_FAILURE);
+      }
+      if(dup2(fd, STDIN_FILENO) < 0)
+      {
+        perror("dup2");
+        close(fd);
+        std::exit(EXIT_FAILURE);
+      }
+      close(fd);
+    }
   // redirect stdout if needed-----
     if(!command.output_file.empty())
     {

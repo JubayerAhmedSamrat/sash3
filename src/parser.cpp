@@ -10,30 +10,25 @@ Command Parser::parse(const std::vector<std::string>& tokens)
     {
       if(i + 1 < tokens.size())
       {
-        command.output_file = tokens[i + 1];
+        command.output_file = tokens[++i];
       }
-      break;
-    }
-    
-    if(tokens[i] == ">>")
+    }else if(tokens[i] == ">>")
     {
       if(i + 1 < tokens.size())
       {
-        command.output_file = tokens[i + 1];
+        command.output_file = tokens[++i];
         command.append = true;
       }
-      break;
-    }
-
-    if(tokens[i] == "<")
+    }else if(tokens[i] == "<")
     {
       if(i + 1 < tokens.size())
       {
-        command.input_file = tokens[i + 1];
+        command.input_file = tokens[++i];
       }
-      break;
+    } else {
+      
+      command.argv.push_back(tokens[i]);
     }
-    command.argv.push_back(tokens[i]);
   }
   return command;
 }
