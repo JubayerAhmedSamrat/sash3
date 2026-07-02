@@ -20,9 +20,99 @@ int Executor::execute(
   {
     return executeSingle(pipeline.commands[0]);
   }
-  return 1;
+  if(pipeline.commands.size() != 2)
+  {
+    return 1;
+  }
 
+  const Command& left = pipeline.commands[0];
+  const Command& right = pipeline.commands[1];
 
+  int pipefd[2];
+
+  if(pipe(pipefd) < 0)
+  {
+    perror("pipe");
+    return 1;
+  }
+
+  pid_t left_pid = fork();
+
+  if(left_pid < 0)
+  {
+    perror("fork");
+    close(pipefd[0]);
+    close(pipefd[1]);
+    return 1;
+  }
+
+  if(left_pid == 0)
+  {
+    //child 1 (left command)
+
+    dup2(pipefd[1], STDOUT_FILENO);
+
+    close(pipefd[0]);
+    close(pipefd[1]);
+
+    std::vector<char*> argv;
+
+    for(const auto& token : left.argv)
+    {
+      argv.push_back(const_cast<char*>(token.c_str()));
+    }
+    argv.push_back(nullptr);
+
+    execvp(argv[0], argv.data());
+
+    perror("execvp");
+    std::exit(EXIT_FAILURE);
+  }
+
+  pid_t right_pid = fork();
+
+  if(right_pid < 0)
+  {
+    perror("fork");
+    close(pipefd[0]);
+    close(pipefd[1]);
+    return 1;
+  }
+
+  if(right_pid == 0)
+  {
+    //child 2 (right command)
+    
+    dup2(pipefd[0], STDIN_FILENO);
+
+    close(pipefd[0]);
+    close(pipefd[1]);
+
+    std::vector<char*> argv;
+
+    for(const auto& token : right.argv)
+    {
+      argv.push_back(const_cast<char*>(token.c_str()));
+    }
+
+    argv.push_back(nullptr);
+
+    execvp(argv[0], argv.data());
+
+    perror("execvp");
+    std::exit(EXIT_FAILURE);
+  }
+
+  // parent
+  close(pipefd[0]);
+  close(pipefd[1]);
+
+  int status;
+
+  waitpid(left_pid, &status, 0);
+  waitpid(right_pid, &status, 0);
+  
+  return 0;
 }
 
 int Executor::executeSingle(const Command& command)
