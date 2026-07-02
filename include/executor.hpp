@@ -1,14 +1,16 @@
 #pragma once
 #include "builtin.hpp"
-#include "command.hpp"
+#include "pipeline.hpp"
 #include <vector>
 #include <string>
 
 class Executor
 {
 public:
-  int execute(const Command& command);
+  int execute(const Pipeline& pipeline);
 
 private:
+  int executeSingle(const Command& command);
+
   BuiltinManager builtin_;
 };

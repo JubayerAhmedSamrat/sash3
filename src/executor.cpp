@@ -8,10 +8,28 @@
 #include <fcntl.h>
 
 int Executor::execute(
-    const Command& command)
+    const Pipeline& pipeline)
 {
 
+  if(pipeline.commands.empty())
+  {
+    return 0;
+  }
+
+  if(pipeline.commands.size() == 1)
+  {
+    return executeSingle(pipeline.commands[0]);
+  }
+  return 1;
+
+
+}
+
+int Executor::executeSingle(const Command& command)
+{
+  
   const auto& tokens = command.argv;
+
   if(tokens.empty())
   {
     return 0;

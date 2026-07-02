@@ -1,5 +1,5 @@
 #include "shell.hpp"
-
+#include "pipeline.hpp"
 #include <iostream>
 #include <string>
 #include <unistd.h>
@@ -30,9 +30,9 @@ void Shell::loop()
       break;
     }
     auto tokens = lexer_.tokenize(line);
-    Command command = parser_.parse(tokens);
+    Pipeline pipeline = parser_.parse(tokens);
     
-   last_status_ = executor_.execute(command);
+   last_status_ = executor_.execute(pipeline);
   }
 }
 

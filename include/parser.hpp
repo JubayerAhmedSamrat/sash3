@@ -1,5 +1,5 @@
 #pragma once
-
+#include "Pipeline.hpp"
 #include "command.hpp"
 #include <vector>
 #include <string>
@@ -7,5 +7,5 @@
 class Parser
 {
 public:
-  Command parse(const std::vector<std::string>& tokens);
+  Pipeline parse(const std::vector<std::string>& tokens);
 };
