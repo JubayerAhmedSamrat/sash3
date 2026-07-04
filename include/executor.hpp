@@ -10,7 +10,7 @@ public:
   int execute(const Pipeline& pipeline);
 
 private:
-  int executeSingle(const Command& command);
+  int executeSingle(const Command& command, bool background);
   void setupRedirection(const Command& command);
 
 

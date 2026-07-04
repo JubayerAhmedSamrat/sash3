@@ -1,4 +1,5 @@
 #include "parser.hpp"
+#include <iostream>
 
 Pipeline Parser::parse(const std::vector<std::string>& tokens)
 {
@@ -31,8 +32,11 @@ Pipeline Parser::parse(const std::vector<std::string>& tokens)
       {
         command.input_file = tokens[++i];
       }
-    } else {
-      
+    }else if(tokens[i] == "&")
+    {
+      pipeline.background = true;
+    } else 
+    {  
       command.argv.push_back(tokens[i]);
     }
   }
@@ -42,4 +46,5 @@ Pipeline Parser::parse(const std::vector<std::string>& tokens)
     pipeline.commands.push_back(command);
   }
   return pipeline;
+ 
 }

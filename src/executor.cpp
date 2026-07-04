@@ -1,5 +1,6 @@
 #include "executor.hpp"
- 
+
+#include <iostream>
 #include <cstdlib>
 #include <cstdio>
 #include <sys/types.h>
@@ -18,7 +19,8 @@ int Executor::execute(
 
   if(pipeline.commands.size() == 1)
   {
-    return executeSingle(pipeline.commands[0]);
+    return executeSingle(pipeline.commands[0],
+        pipeline.background);
   }
 
   int previous_read = - 1;
@@ -106,7 +108,8 @@ int Executor::execute(
   return 1;
 }
 
-int Executor::executeSingle(const Command& command)
+int 
+Executor::executeSingle(const Command& command, bool background)
 {
   
   const auto& tokens = command.argv;
@@ -141,6 +144,12 @@ int Executor::executeSingle(const Command& command)
   } else {
   //parent process-------------------------------
     int status;
+   
+    if(background)
+    {
+      std::cout << "[" << pid << "]\n";
+      return 0;
+    }
     waitpid(pid, &status, 0);
 
     if(WIFEXITED(status))

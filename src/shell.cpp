@@ -4,6 +4,7 @@
 #include <string>
 #include <unistd.h>
 #include <limits.h>
+#include <sys/wait.h>
 
 constexpr const char* RESET = "\033[0m";
 constexpr const char* CYAN = "\033[36m";
@@ -22,6 +23,10 @@ void Shell::loop()
 {
   while (true)
   {
+    while(waitpid(-1, nullptr, WNOHANG) > 0)
+    {
+
+    }
     std::string line;
     print_prompt();
     
