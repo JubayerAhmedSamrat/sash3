@@ -46,15 +46,27 @@ void Shell::loop()
       executor_.printJobs();
       continue;
     }
-    if(tokens.size() == 1 && tokens[0] == "fg")
+    if(tokens[0] == "fg")
     {
-      executor_.foregroundLastJob();
+      if(tokens.size() == 1)
+      {
+        executor_.foregroundLastJob();
+      } else 
+      {
+        executor_.foregroundJob(std::stoi(tokens[1]));
+      }
       continue;
     }
 
-    if(tokens.size() == 1 && tokens[0] == "bg")
+    if(tokens[0] == "bg")
     {
-      executor_.backgroundLastJob();
+      if(tokens.size() == 1)
+      {
+        executor_.backgroundLastJob();
+      } else 
+      {
+        executor_.backgroundJob(std::stoi(tokens[1]));
+      }
       continue;
     }
 

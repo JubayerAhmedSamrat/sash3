@@ -72,6 +72,18 @@ Job* JobsManager::lastJob()
   return &jobs_.back();
 }
 
+Job* JobsManager::findJob(int id)
+{
+  for(auto& job : jobs_)
+  {
+    if(job.id == id)
+    {
+      return &job;
+    }
+  }
+  
+  return nullptr;
+}
 
 void JobsManager::stop(pid_t pid)
 {

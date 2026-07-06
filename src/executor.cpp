@@ -319,6 +319,62 @@ void Executor::foregroundLastJob()
 
 }
 
+void Executor::foregroundJob(int id)
+{
+  Job* job = jobs_.findJob(id);
+
+  if(job == nullptr)
+  {
+    std::cout << "fg: no such job\n";
+    return;
+  }
+
+  jobs_.resume(job->pid);
+
+  std::cout << job->command <<'\n';
+
+  kill(-job->pid, SIGCONT);
+
+  int status;
+  waitpid(job->pid, &status, WUNTRACED);
+
+  tcsetpgrp(STDIN_FILENO, getpid());
+
+  if(WIFSTOPPED(status))
+  {
+    jobs_.stop(job->pid);
+  } else 
+  {
+    jobs_.remove(job->pid);
+  }
+}
+
+void Executor::backgroundJob(int id)
+{
+  Job* job = jobs_.findJob(id);
+
+  if(job == nullptr)
+  {
+    std::cout << "bg: no such job\n";
+    return;
+  }
+
+  if(job->state == JobState::Running)
+  {
+    std::cout << "bg: job already running\n";
+    return;
+  }
+
+  kill(-job->pid, SIGCONT);
+  jobs_.resume(job->pid);
+
+  std::cout 
+    << "["
+    << job->id 
+    << "] Running "
+    << job->command 
+    << '\n';
+}
 void Executor::backgroundLastJob()
 {
   Job* job = jobs_.lastJob();

@@ -19,7 +19,7 @@ public:
 
   std::vector<Job>& jobs();
   Job* lastJob();
-
+  Job* findJob(int id);
 private:
 
   std::vector<Job> jobs_;

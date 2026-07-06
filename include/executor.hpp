@@ -17,7 +17,9 @@ public:
   
   void foregroundLastJob();
   void backgroundLastJob();
-
+  
+  void foregroundJob(int id);
+  void backgroundJob(int id);
 private:
   int executeSingle(const Command& command, bool background);
   void setupRedirection(const Command& command);
