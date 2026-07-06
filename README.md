@@ -164,7 +164,7 @@ sash3/
 Clone the repository.
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/JubayerAhmedSamrat/sash3.git
 cd sash3
 ```
 
