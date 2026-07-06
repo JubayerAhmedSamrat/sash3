@@ -23,25 +23,56 @@ void Shell::loop()
 {
   while (true)
   {
-    while(waitpid(-1, nullptr, WNOHANG) > 0)
-    {
+    reapBackgroundJobs();
 
-    }
     std::string line;
     print_prompt();
     
     if(!std::getline(std::cin, line))
     {
-      break;
+      if(std::cin.eof())
+      {
+        break;
+      }
+
+      std::cin.clear();
+      std::cout<< '\n';
+      continue;
     }
     auto tokens = lexer_.tokenize(line);
-    Pipeline pipeline = parser_.parse(tokens);
-    
-   last_status_ = executor_.execute(pipeline);
+
+    if(tokens.size() == 1 && tokens[0] == "jobs")
+    {
+      executor_.printJobs();
+      continue;
+    }
+    if(tokens.size() == 1 && tokens[0] == "fg")
+    {
+      executor_.foregroundLastJob();
+      continue;
+    }
+
+    if(tokens.size() == 1 && tokens[0] == "bg")
+    {
+      executor_.backgroundLastJob();
+      continue;
+    }
+
+  Pipeline pipeline = parser_.parse(tokens);  
+  last_status_ = executor_.execute(pipeline);
   }
 }
 
+void Shell::reapBackgroundJobs()
+{
+  int status;
+  pid_t pid;
 
+  while((pid = waitpid(-1, &status, WNOHANG)) > 0)
+  {
+    executor_.removeJob(pid);
+  }
+}
 void Shell::print_prompt()
 {
   char cwd[PATH_MAX];
@@ -79,4 +110,10 @@ void Shell::print_prompt()
   } else {
     std::cout<<"sash> ";
   }
+}
+
+Shell::Shell()
+  :executor_(jobs_)
+{
+
 }

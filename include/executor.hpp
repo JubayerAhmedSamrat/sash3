@@ -1,4 +1,5 @@
 #pragma once
+#include "jobs.hpp"
 #include "builtin.hpp"
 #include "pipeline.hpp"
 #include <vector>
@@ -7,7 +8,15 @@
 class Executor
 {
 public:
+  explicit Executor(JobsManager& jobs);
+
   int execute(const Pipeline& pipeline);
+  
+  void printJobs() const;
+  void removeJob(pid_t pid);
+  
+  void foregroundLastJob();
+  void backgroundLastJob();
 
 private:
   int executeSingle(const Command& command, bool background);
@@ -16,6 +25,7 @@ private:
 
   [[noreturn]]
   void execCommand(const Command& command);
-
+ 
+  JobsManager& jobs_;
   BuiltinManager builtin_;
 };

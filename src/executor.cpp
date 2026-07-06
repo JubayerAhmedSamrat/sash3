@@ -7,7 +7,12 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <csignal>
 
+Executor::Executor(JobsManager& jobs) : jobs_(jobs)
+{
+
+}
 int Executor::execute(
     const Pipeline& pipeline)
 {
@@ -51,6 +56,8 @@ int Executor::execute(
 
     if(pid == 0)
     {
+      signal(SIGINT, SIG_DFL);
+      signal(SIGTSTP, SIG_DFL);
       //read from previous pipe
 
       if(previous_read != -1)
@@ -134,10 +141,23 @@ Executor::executeSingle(const Command& command, bool background)
     perror("fork");
     return 1;
   }
+
+  setpgid(pid, pid);
+
   if(pid == 0)
   {
   //child porcess-----------------------------
-    
+    setpgid(0, 0);
+
+    if(!background)
+    {
+      tcsetpgrp(STDIN_FILENO, getpid());
+    }
+
+    signal(SIGINT, SIG_DFL);
+    signal(SIGTSTP, SIG_DFL);
+    signal(SIGQUIT, SIG_DFL);
+
     setupRedirection(command);
 
     execCommand(command);
@@ -147,11 +167,45 @@ Executor::executeSingle(const Command& command, bool background)
    
     if(background)
     {
-      std::cout << "[" << pid << "]\n";
+      std::string command_line;
+
+      for(const auto& token : command.argv)
+      {
+        if(!command_line.empty())
+        {
+          command_line += " ";
+        }
+
+         command_line += token;
+      }
+
+      jobs_.add(pid, command_line);
+
       return 0;
     }
-    waitpid(pid, &status, 0);
+    waitpid(pid, &status, WUNTRACED);
+   
+    tcsetpgrp(STDIN_FILENO, getpid());
 
+    if(WIFSTOPPED(status))
+    {
+      std::string command_line;
+
+      for(const auto& token : command.argv)
+      {
+        if(!command_line.empty())
+        {
+          command_line += " ";
+        }
+
+        command_line += token;
+      }
+
+      jobs_.add(pid, command_line);
+      jobs_.stop(pid);
+
+      return 0;
+    }
     if(WIFEXITED(status))
     {
       return WEXITSTATUS(status);
@@ -219,4 +273,78 @@ void Executor::setupRedirection(const Command& command)
     dup2(fd, STDOUT_FILENO);
     close(fd);
   }
+}
+
+void Executor::printJobs() const 
+{
+  jobs_.print();
+}
+
+void Executor::removeJob(pid_t pid)
+{
+  jobs_.remove(pid);
+}
+
+void Executor::foregroundLastJob()
+{
+  Job* job = jobs_.lastJob();
+
+  if(job == nullptr)
+  {
+    std::cout << "fg: no current job\n";
+    return;
+  }
+
+  std::cout << job->command <<'\n';
+  
+  // give terminal to the job
+  tcsetpgrp(STDIN_FILENO, job->pid);
+
+  // continue the entire process group
+  kill(-job->pid, SIGCONT);
+
+  int status;
+  waitpid(job->pid, &status, 0);
+
+  // shell gets terminal back 
+  tcsetpgrp(STDIN_FILENO, getpgrp());
+
+  if(WIFSTOPPED(status))
+  {
+    jobs_.stop(job->pid);
+  } else 
+  {
+    jobs_.remove(job->pid);
+  }
+
+}
+
+void Executor::backgroundLastJob()
+{
+  Job* job = jobs_.lastJob();
+
+  if(job == nullptr)
+  {
+    std::cout << "bg: no current job\n";
+    return;
+  }
+
+  // Already running?
+  if(job->state == JobState::Running)
+  {
+    std::cout << "bg: job already running\n";
+    return;
+  }
+
+  // Resume the entire process group 
+  kill(-job->pid, SIGCONT);
+
+  jobs_.resume(job->pid);
+
+  std::cout 
+    << "["
+    << job->id 
+    << "] Running "
+    << job->command 
+    <<'\n';
 }
