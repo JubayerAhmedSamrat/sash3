@@ -19,6 +19,7 @@ add_executable(sash3
   src/signals.cpp
   src/builtin.cpp
   src/utils.cpp
+  src/history.cpp
 
 
 )

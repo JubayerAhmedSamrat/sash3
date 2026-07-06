@@ -34,10 +34,15 @@ void Shell::loop()
       {
         break;
       }
-
       std::cin.clear();
       std::cout<< '\n';
       continue;
+    }
+ 
+
+    if(!line.empty())
+    {
+      history_.add(line);
     }
     auto tokens = lexer_.tokenize(line);
 
@@ -46,6 +51,13 @@ void Shell::loop()
       executor_.printJobs();
       continue;
     }
+
+    if(tokens.size() == 1 && tokens[0] == "history")
+    {
+      history_.print();
+      continue;
+    }
+
     if(tokens[0] == "fg")
     {
       if(tokens.size() == 1)

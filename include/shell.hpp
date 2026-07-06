@@ -4,6 +4,8 @@
 #include "parser.hpp"
 #include "executor.hpp"
 #include "lexer.hpp"
+#include "history.hpp"
+
 class Shell
 {
   public:
@@ -22,4 +24,5 @@ class Shell
     Parser parser_;
     JobsManager jobs_;
     Executor executor_;
+    History history_;
 };
